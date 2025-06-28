@@ -1,0 +1,52 @@
+*{
+      margin: 0;
+      padding: 0;
+}
+
+.admin_container{
+      width: 100%;
+      background-color: #1e1e2f;
+      height: 100vh;
+}
+
+.access_logs{
+      background:#56567c;
+      width: 40%;
+      text-align: center;
+      height: 450px;
+      overflow-y: auto;
+      position: absolute;
+      top:12%;
+      right: 1%;
+      color: #ffffff;
+
+}
+.access_logs h3{
+      font-size: 1.6rem ;
+      color: #ffffff;
+      margin: 10px 0;
+}
+.access_logs li{
+      margin: 15px;
+      list-style-type: none;
+      font-size: 18px;
+}
+.filter_logs{
+      width: 55%;
+      background-color: #56567c;
+      margin: 22px 0 0 40px;
+}
+.filter_logs h3{
+      font-size: 1.5rem;
+      color: #ffffff;
+      margin: 0 0 0 280px;
+      padding-top: 10px;
+}
+.filter_input{
+      padding: 10px;
+      margin: 10px 0 10px 30px;
+}
+.apply_filter_btn{
+      padding: 10px 25px;
+      margin: auto;
+}
