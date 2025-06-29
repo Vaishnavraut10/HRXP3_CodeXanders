@@ -39,8 +39,11 @@ export default function Home() {
   };
 
   return (
+    <div class="main_container">
+
+    
     <div className="login_container">
-      <h1 className="heading">🔒 BYOD SecureAccess</h1>
+      <h1 className="heading">🔒 Z-Secure</h1>
 
       {/* 🌐 Google Login */}
       <button className="login_with_google" onClick={handleGoogleLogin}>
@@ -67,6 +70,7 @@ export default function Home() {
         </div>
         <button className="login">Login</button>
       </form>
+    </div>
     </div>
   );
 }

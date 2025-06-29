@@ -28,7 +28,7 @@ export default function AdminNotificationsPage() {
   return (
     <div className="container">
       <AdminNavbar />
-      <h2>📢 Admin Notifications</h2>
+      <h2> Admin Notifications</h2>
 
       {loading ? (
         <p>Loading notifications...</p>

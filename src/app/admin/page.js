@@ -3,23 +3,20 @@ import { useEffect, useState } from "react";
 import { auth, db } from "../../firebase/config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { getDeviceOS } from "../../utils/parseDevice";
-import { getBrowserName } from "../../utils/parseBrowser";
+
 import {
   doc,
   getDoc,
   collection,
   getDocs,
   updateDoc,
-  setDoc,
+  addDoc,
   serverTimestamp,
+  orderBy,
   query,
-  where,
 } from "firebase/firestore";
-import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import AdminNavbar from "../components/AdminNavbar";
-import Link from "next/link";
 import "./admin.css";
 
 export default function AdminPage() {
@@ -29,8 +26,9 @@ export default function AdminPage() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [authorized, setAuthorized] = useState(false);
-  const [browserData, setBrowserData] = useState([]);
-  const [deviceData, setDeviceData] = useState([]);
+  const [announcementText, setAnnouncementText] = useState("");
+  const [announcementTitle, setAnnouncementTitle] = useState("");
+  const [announcements, setAnnouncements] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -38,12 +36,12 @@ export default function AdminPage() {
       const user = auth.currentUser;
       if (!user) return router.push("/");
 
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+      const userSnap = await getDoc(doc(db, "users", user.uid));
       if (userSnap.exists() && userSnap.data().role === "admin") {
         setAuthorized(true);
         fetchLogs();
         fetchUsers();
+        fetchAnnouncements();
       } else {
         alert("Access denied. Admins only.");
         router.push("/");
@@ -57,7 +55,9 @@ export default function AdminPage() {
     let data = snapshot.docs.map((doc) => doc.data());
 
     if (filterEmail.trim()) {
-      data = data.filter((log) => log.email.includes(filterEmail.trim()));
+      data = data.filter((log) =>
+        log.email.toLowerCase().includes(filterEmail.toLowerCase())
+      );
     }
 
     if (startDate && endDate) {
@@ -68,56 +68,67 @@ export default function AdminPage() {
     }
 
     setLogs(data.sort((a, b) => b.time?.seconds - a.time?.seconds));
-    processDeviceData(data);
-    processBrowserData(data);
   };
 
   const fetchUsers = async () => {
     const snapshot = await getDocs(collection(db, "users"));
-    const data = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setUsers(data);
+    setUsers(
+      snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+    );
   };
 
   const toggleRole = async (id, currentRole) => {
     const newRole = currentRole === "admin" ? "employee" : "admin";
-    const userRef = doc(db, "users", id);
-    await updateDoc(userRef, { role: newRole });
+    await updateDoc(doc(db, "users", id), { role: newRole });
     fetchUsers();
   };
 
-  const processBrowserData = (logs) => {
-    const count = {};
-    logs.forEach((log) => {
-      const browser = getBrowserName(log.browser || "");
-      count[browser] = (count[browser] || 0) + 1;
-    });
-
-    setBrowserData(
-      Object.entries(count).map(([name, value]) => ({ name, value }))
-    );
+  const toggleBlock = async (id, isBlocked) => {
+    await updateDoc(doc(db, "users", id), { blocked: !isBlocked });
+    fetchUsers();
   };
 
-  const processDeviceData = (logs) => {
-    const count = {};
-    logs.forEach((log) => {
-      const os = getDeviceOS(log.device || "");
-      count[os] = (count[os] || 0) + 1;
+  const postAnnouncement = async () => {
+    if (!announcementTitle.trim() || !announcementText.trim()) {
+      alert("Title and message are required.");
+      return;
+    }
+
+    await addDoc(collection(db, "announcements"), {
+      title: announcementTitle,
+      message: announcementText,
+      timestamp: serverTimestamp(),
     });
 
-    setDeviceData(
-      Object.entries(count).map(([name, count]) => ({ name, count }))
-    );
+    setAnnouncementText("");
+    setAnnouncementTitle("");
+    fetchAnnouncements();
   };
 
-  if (!authorized)
-    return <div className="container">Checking admin access...</div>;
+  const fetchAnnouncements = async () => {
+    const q = query(collection(db, "announcements"), orderBy("timestamp", "desc"));
+    const snapshot = await getDocs(q);
+    setAnnouncements(snapshot.docs.map((doc) => doc.data()));
+  };
+
+  if (!authorized) return <div className="container">Checking admin access...</div>;
 
   return (
     <div className="admin_container">
       <AdminNavbar />
+
+      {/* 🔔 Admin Notifications */}
+      <section className="notification" style={{ marginTop: "20px" }}>
+        <button
+          className="notification-btn"
+          onClick={() => router.push("/admin/notifications")}
+        >
+          🔔 View Admin Notifications
+        </button>
+      </section>
 
       {/* 🔍 Filters */}
       <section className="filter_logs">
@@ -150,13 +161,14 @@ export default function AdminPage() {
 
       {/* 👥 User Manager */}
       <section className="user_manager">
-        <h3>User Role Manager</h3>
+        <h3>User Manager</h3>
         <table>
           <thead>
             <tr>
               <th>Email</th>
               <th>Role</th>
-              <th>Toggle</th>
+              <th>Toggle Role</th>
+              <th>Block</th>
             </tr>
           </thead>
           <tbody>
@@ -169,20 +181,44 @@ export default function AdminPage() {
                     Make {u.role === "admin" ? "Employee" : "Admin"}
                   </button>
                 </td>
+                <td>
+                  <button
+                    className={`block-btn ${u.blocked ? "blocked" : "unblocked"}`}
+                    onClick={() => toggleBlock(u.id, u.blocked)}
+                  >
+                    {u.blocked ? "Unblock" : "Block"}
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </section>
 
-      {/* 🔔 Admin Notifications Button */}
-      <section style={{ marginTop: "20px" }}>
-        <button
-          className="notification-btn"
-          onClick={() => router.push("/admin/notifications")}
-        >
-          🔔 View Admin Notifications
+      {/* 📬 Announcement Publisher */}
+      <section className="announcement_publisher">
+        <h3>📬 Announcement Publisher</h3>
+        <button style={{ marginTop: "10px" }} onClick={postAnnouncement}>
+          ➕ Post Announcement
         </button>
+        <input
+          type="text"
+          placeholder="Title"
+          value={announcementTitle}
+          onChange={(e) => setAnnouncementTitle(e.target.value)}
+          style={{ width: "92.5%", padding: "8px", margin:"25px 20px 10px 20px" }}
+        />
+        <textarea 
+          placeholder="Write your announcement here..."
+          value={announcementText}
+          onChange={(e) => setAnnouncementText(e.target.value)}
+          rows={4}
+          style={{ width: "90%", padding: "20px" ,margin:"1px 0 5px 20px" }}
+        />
+        <button style={{ marginTop: "10px" }} onClick={postAnnouncement}>
+          ➕ Post Announcement
+        </button>
+      
       </section>
 
       {/* 📜 Recent Logs */}
@@ -202,17 +238,6 @@ export default function AdminPage() {
           </ul>
         )}
       </section>
-
-      {/* 🚪 Logout */}
-      <button
-        className="logout-btn"
-        onClick={() => {
-          signOut(auth);
-          window.location.href = "/";
-        }}
-      >
-        Logout
-      </button>
     </div>
   );
 }

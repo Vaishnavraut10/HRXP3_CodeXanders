@@ -13,12 +13,13 @@
       background:#56567c;
       width: 40%;
       text-align: center;
-      height: 450px;
+      height: 620px;
       overflow-y: auto;
       position: absolute;
-      top:12%;
+      top:10%;
       right: 1%;
       color: #ffffff;
+      border-radius: 20px;
 
 }
 .access_logs h3{
@@ -34,7 +35,8 @@
 .filter_logs{
       width: 55%;
       background-color: #56567c;
-      margin: 22px 0 0 40px;
+      margin: 21px 0 0 40px;
+      border-radius: 20px;
 }
 .filter_logs h3{
       font-size: 1.5rem;
@@ -49,4 +51,78 @@
 .apply_filter_btn{
       padding: 10px 25px;
       margin: auto;
+}
+.user_manager{
+      background-color: #56567c;
+      width: 55%;
+      text-align: center;
+      margin: 20px 40px;
+      padding: 20px 0;
+      border-radius: 20px;
+}
+
+
+.user_manager table{
+      margin: auto;
+}
+.user_manager button{
+      padding: 10px 15px;
+      margin: 10px;
+}
+.user_manager h3{
+      font-size: 1.5rem;
+      color: white;
+      margin: 10px 0;
+}
+.user_manager th{
+      color: white;
+      font-size: 1.4rem;
+}
+.user_manager td{
+      color: white;
+      font-size: 1.3rem;
+      margin: 10px;
+}
+.notification{
+    position: absolute;  
+    right: 100px;
+    top: -13px;
+    border-radius: 20px;
+}
+.notification button{
+      padding: 8px 10px;
+}
+.block-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.block-btn.blocked {
+  background-color: crimson;
+  color: white;
+}
+.block-btn.unblocked {
+  background-color: red;
+  color: white;
+}
+.announcement_publisher{
+      width: 55%;
+      background-color: #56567c;
+      margin: 10px 0 0 40px;
+      height: 233px;
+      position: relative;
+      border-radius: 20px;
+      
+}
+.announcement_publisher h3{
+      font-size: 1.6rem;
+      text-align: center;
+      color: white;
+}
+.announcement_publisher button{
+      padding: 10px;
+      position: absolute;
+      top: 0;
+      right: 25px;
 }

@@ -1,0 +1,80 @@
+.container_analytics{
+
+      width: 100%;
+      background-color: #1e1e2f;
+      height: 100vh;
+}
+.container_analytics h2{
+      font-size: 1.8rem;
+      color: white;
+}
+.analytics_filter{
+      width: 60%;
+      background-color: #56567c;
+       padding: 10px;
+       position: absolute;
+       margin: 20px 0 0 0;
+       
+}
+.analytics_filter h3{
+      font-size: 1.5rem;
+      color: #ffffff;
+      margin: 0 0 0 280px;
+      padding-top: 10px;
+}
+
+.analytics_filter_btn{
+      padding: 10px 25px;
+      margin: 10px;
+      display: inline;
+}
+.analytics_input{
+      padding: 10px;
+      margin: 10px 0 10px 30px;
+}
+.analytics_filter p{
+      color: white;
+      font-size: 1.6rem;
+      text-align: center;
+}
+.chart_container{
+      width: 61.4%;
+      height: 300px;
+      margin: 120px 0 0 0;
+      background-color: #56567c;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+}
+.chart_container h3{
+      font-size: 1.6rem;
+      color: white;
+      text-align: center;
+}
+.main_chart_container{
+      display: flex;
+      align-items: center;
+}
+.map_wrapper {
+  margin-top: 40px;
+  background-color:#56567c;
+  border-radius: 10px;
+  color: #ffffff;
+  width: 550px;
+  float:right;
+  margin: 20px 20px 0 0;
+
+}
+
+.map_wrapper h3 {
+  margin-bottom: 15px;
+  color: #00c49f;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60%;
+}
+
+.pie_chart{
+      background-color: #56567c;
+      
+}

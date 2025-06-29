@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-
+import "./AdminNavbar.css"
 export default function AdminNavbar() {
   const pathname = usePathname();
 
@@ -24,15 +24,15 @@ export default function AdminNavbar() {
   return (
     <nav style={navStyle}>
       <div>
-        <Link href="/admin" style={linkStyle('/admin')}>
+        <Link href="/admin" className='link' style={linkStyle('/admin')}>
           Admin Panel
         </Link>
-        <Link href="/admin/analytics" style={linkStyle('/admin/analytics')}>
+        <Link href="/admin/analytics" className='link' style={linkStyle('/admin/analytics')}>
           Analytics
         </Link>
       </div>
       <div>
-        <Link href="/" style={{ color: '#ff4c4c', textDecoration: 'none' }}>
+        <Link href="/" className='link'  style={{ color: '#ff4c4c', textDecoration: 'none' }}>
           Logout
         </Link>
       </div>

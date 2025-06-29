@@ -4,6 +4,7 @@ import { auth, db } from '../../firebase/config';
 import * as faceapi from 'face-api.js';
 import { useRouter } from 'next/navigation';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import './verify.css'; // ✅ include the CSS
 
 export default function VerifyPage() {
   const [status, setStatus] = useState('Loading...');
@@ -43,9 +44,11 @@ export default function VerifyPage() {
             retries: attempts,
           });
 
-          // Role-based redirect
           const userSnap = await getDoc(doc(db, 'users', user.uid));
-          const role = userSnap.exists() && userSnap.data().role === 'admin' ? 'admin' : 'dashboard';
+          const role =
+            userSnap.exists() && userSnap.data().role === 'admin'
+              ? 'admin'
+              : 'dashboard';
           router.push(`/${role}`);
         }
 
@@ -62,7 +65,7 @@ export default function VerifyPage() {
           });
 
           setTimeout(() => {
-            router.push('/fallback'); // optional: route to a fallback support page
+            router.push('/fallback');
           }, 5000);
         }
       }, 3000);
@@ -72,17 +75,11 @@ export default function VerifyPage() {
   }, []);
 
   return (
-    <div className="container">
+    <div className="verify-container">
       <h2>Face Verification</h2>
-      <video
-        ref={videoRef}
-        width="300"
-        height="300"
-        style={{ borderRadius: '50%', objectFit: 'cover', border: '3px solid #ccc' }}
-        muted
-      />
-      <p>{status}</p>
-      <p>Attempts: {retryCount}/5</p>
+      <video ref={videoRef} className="webcam" muted />
+      <p className="status-text">{status}</p>
+      <p className="status-text">Attempts: {retryCount}/5</p>
     </div>
   );
 }
